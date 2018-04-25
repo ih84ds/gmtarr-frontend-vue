@@ -12,6 +12,7 @@ export default {
       return this.$store.state.errors
     }
   },
+  // FIXME add a way to remove/clear errors or maybe just use a "flash" module...
 }
 </script>
 

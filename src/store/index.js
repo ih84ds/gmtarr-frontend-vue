@@ -21,6 +21,14 @@ const mutations = {
   addError (state, error) {
     state.errors.push(error)
   },
+  clearErrors (state) {
+    state.errors = []
+  },
+  removeError (state, index) {
+    if (index >= 0 && index < state.errors.length) {
+      state.errors.splice(index, 1)
+    }
+  },
   beginLoader (state) {
     state.loaderCount++
   },
