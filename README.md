@@ -2,6 +2,16 @@
 
 > GMTA Round Robin Frontend, Part Vue
 
+## Docker Setup
+
+``` bash
+# install dependencies
+docker-compose run node npm install
+
+# run the dev server on http://localhost:8080
+docker-compose up
+```
+
 ## Build Setup
 
 ``` bash
