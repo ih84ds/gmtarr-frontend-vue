@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import ErrorList from './components/Errorlist'
+import ErrorList from './components/ErrorList'
 
 export default {
   name: 'App',
