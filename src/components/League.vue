@@ -31,24 +31,11 @@ export default {
     id: 'fetchData'
   },
   methods: {
-    fetchData() {
-      this.league = null
-      this.flights = []
-      this.$store.commit('beginLoader')
-      this.$axios
-        .get('leagues/'+this.id)
-        .then(response => {
-          this.league = response.data
-          this.$store.commit('endLoader')
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            this.$store.commit('addError', "League not found.")
-          } else {
-            this.$store.commit('addError', error.toString())
-          }
-          this.$store.commit('endLoader')
-        })
+    fetchData () {
+      this.fetchLeague()
+      this.fetchFlights()
+    },
+    fetchFlights () {
       this.$store.commit('beginLoader')
       this.$axios
         .get('leagues/'+this.id+'/flights')
@@ -57,6 +44,7 @@ export default {
           this.$store.commit('endLoader')
         })
         .catch(error => {
+          this.flights = []
           if (error.response.status === 404) {
             this.$store.commit('addError', "League flights not found.")
           } else {
@@ -64,7 +52,25 @@ export default {
           }
           this.$store.commit('endLoader')
         })
-    }
+    },
+    fetchLeague () {
+      this.$store.commit('beginLoader')
+      this.$axios
+        .get('leagues/'+this.id)
+        .then(response => {
+          this.league = response.data
+          this.$store.commit('endLoader')
+        })
+        .catch(error => {
+          this.league = null
+          if (error.response.status === 404) {
+            this.$store.commit('addError', "League not found.")
+          } else {
+            this.$store.commit('addError', error.toString())
+          }
+          this.$store.commit('endLoader')
+        })
+    },
   }
 }
 </script>

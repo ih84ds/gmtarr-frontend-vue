@@ -70,10 +70,12 @@ export default {
     id: 'fetchData'
   },
   methods: {
-    fetchData() {
-      this.flight = null
-      this.players = []
-      this.matches = []
+    fetchData () {
+      this.fetchFlight()
+      this.fetchPlayers()
+      this.fetchMatches()
+    },
+    fetchFlight () {
       this.$store.commit('beginLoader')
       this.$axios
         .get('flights/'+this.id)
@@ -82,6 +84,7 @@ export default {
           this.$store.commit('endLoader')
         })
         .catch(error => {
+          this.flight = null
           if (error.response.status === 404) {
             this.$store.commit('addError', "Flight not found.")
           } else {
@@ -89,21 +92,8 @@ export default {
           }
           this.$store.commit('endLoader')
         })
-      this.$store.commit('beginLoader')
-      this.$axios
-        .get('flights/'+this.id+'/players')
-        .then(response => {
-          this.players = response.data
-          this.$store.commit('endLoader')
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            this.$store.commit('addError', "Flight players not found.")
-          } else {
-            this.$store.commit('addError', error.toString())
-          }
-          this.$store.commit('endLoader')
-        })
+    },
+    fetchMatches () {
       this.$store.commit('beginLoader')
       this.$axios
         .get('flights/'+this.id+'/matches')
@@ -119,8 +109,26 @@ export default {
           }
           this.$store.commit('endLoader')
         })
-    }
-  }
+    },
+    fetchPlayers () {
+      this.$store.commit('beginLoader')
+      this.$axios
+        .get('flights/'+this.id+'/players')
+        .then(response => {
+          this.players = response.data
+          this.$store.commit('endLoader')
+        })
+        .catch(error => {
+          this.players = []
+          if (error.response.status === 404) {
+            this.$store.commit('addError', "Flight players not found.")
+          } else {
+            this.$store.commit('addError', error.toString())
+          }
+          this.$store.commit('endLoader')
+        })
+    },
+  },
 }
 </script>
 
