@@ -18,7 +18,6 @@ export default {
       // NOTE: we build from location components insetead of using href to esure we exclude extra junk--query string, etc.
       let redirect_uri = [window.location.protocol, '//', window.location.host, window.location.pathname].join('')
       if (code) {
-        // FIXME get token
         let next = sessionStorage.getItem('login-next')
         if (next) {
           sessionStorage.removeItem('login-next')
@@ -30,7 +29,7 @@ export default {
           redirect_uri: redirect_uri,
         }
         this.$store.dispatch('requestToken', params)
-          .then(response => {
+          .then(() => {
             this.$store.commit('endLoader')
             this.$router.replace(nextRoute)
           })

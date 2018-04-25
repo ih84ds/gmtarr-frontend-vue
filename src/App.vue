@@ -25,20 +25,28 @@ import ErrorList from './components/Errorlist'
 export default {
   name: 'App',
   computed: {
+    apiToken () {
+      return this.$store.state.auth.apiToken
+    },
     authenticated () {
       return this.$store.getters.authenticated
     },
     loading () {
       return this.$store.getters.loading
     },
+    apiTokenExpiration () {
+      return this.$store.getters.apiTokenExpiration
+    }
   },
   created () {
     this.authorizeApi()
+    this.refreshApiToken()
   },
   watch: {
-    authenticated (newAuthenticated, oldAuthenticated) {
-      if (newAuthenticated) {
+    apiToken (newToken, oldToken) {
+      if (this.authenticated) {
         this.authorizeApi()
+        this.scheduleApiTokenRefresh()
       } else {
         this.deauthorizeApi()
       }
@@ -52,9 +60,28 @@ export default {
     logout () {
       this.$router.push({name: 'logout'})
     },
+    refreshApiToken () {
+      if (this.authenticated) {
+        this.$store.dispatch('refreshToken')
+      }
+    },
+    scheduleApiTokenRefresh() {
+      let expiration = this.apiTokenExpiration
+      if (expiration instanceof Date) {
+        let now = new Date()
+        let msLeft = expiration.getTime() - now.getTime()
+        // refresh token one minute before it expires
+        let refreshAt = msLeft - 60000
+        if (refreshAt < 0) {
+          // if there is less that a minute left, refresh now
+          refreshAt = 0
+        }
+        setTimeout(this.refreshApiToken, refreshAt)
+      }
+    },
     authorizeApi () {
       // set up Authorization header
-      let token = this.$store.state.auth.apiToken
+      let token = this.apiToken
       if (token) {
         this.$axios.defaults.headers.common['Authorization'] = 'JWT ' + token
       }

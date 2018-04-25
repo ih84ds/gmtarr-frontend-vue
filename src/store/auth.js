@@ -1,3 +1,4 @@
+import jwtDecode from 'jwt-decode'
 import api from '../api'
 import router from '../router'
 
@@ -13,7 +14,20 @@ const getters = {
   authenticated: (state, getters) => {
     // FIXME: check token expiration and/or validity?
     return !!state.apiToken
-  }
+  },
+  apiTokenData: (state, getters) => {
+    return getters.authenticated ? jwtDecode(state.apiToken) : null
+  },
+  apiTokenExpiration: (state, getters) => {
+    let expiration = null
+    let tokenData = getters.apiTokenData
+    let expTimestamp = tokenData.exp
+    if (expTimestamp > 0) {
+      // exp is in seconds, Date expects milliseconds
+      expiration = new Date(expTimestamp * 1000)
+    }
+    return expiration
+  },
 }
 
 const mutations = {
@@ -43,15 +57,22 @@ const actions = {
     let queryString = objecToQueryString(authArgs)
     window.location.replace(OAUTH_URL+'?'+queryString)
   },
+  refreshToken: (context) => {
+    let data = { token: state.apiToken }
+    return api.post('refresh-token', data)
+      .then(response => {
+        context.commit('setApiToken', response.data.token)
+      })
+      .catch(error => {
+        context.commit('clearApiToken')
+      })
+  },
   requestToken: (context, params) => {
     return api.get('auth-token', { params: params })
       .then(response => {
         context.commit('setApiToken', response.data.token)
       })
-      .catch(error => {
-
-      })
-  }
+  },
 }
 
 export default {
