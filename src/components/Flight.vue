@@ -11,13 +11,14 @@
         </li>
       </ul>
       <p v-else>There are no players right now. Check back soon!</p>
+      <flight-standings :flight="flight"></flight-standings>
+      <h3>Schedule</h3>
       <ul v-if="matchesByDate.length">
         <li v-for="date in matchesByDate" :key="date.date">
           {{ date.date }}
           <ul v-if="date.matches.length">
             <li v-for="match in date.matches" :key="match.id">
-              home: {{ match.home_player.name }}
-              visitor: {{ match.visitor_player.name }}
+              <flight-match :match="match"></flight-match>
             </li>
           </ul>
         </li>
@@ -28,6 +29,9 @@
 </template>
 
 <script>
+import FlightMatch from './FlightMatch'
+import FlightStandings from './FlightStandings'
+
 export default {
   props: {
     id: Number
@@ -128,6 +132,10 @@ export default {
           this.$store.commit('endLoader')
         })
     },
+  },
+  components: {
+    FlightMatch,
+    FlightStandings,
   },
 }
 </script>
