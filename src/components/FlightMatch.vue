@@ -12,10 +12,6 @@
 export default {
   name: 'FlightMatch',
   props: ['match'],
-  data () {
-    return {
-    }
-  },
   computed: {
     played () {
       return !!this.match.played_date

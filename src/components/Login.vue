@@ -23,18 +23,15 @@ export default {
           sessionStorage.removeItem('login-next')
         }
         let nextRoute = next ? {path: next} : {name: 'home'}
-        this.$store.commit('beginLoader')
         let params = {
           code: code,
           redirect_uri: redirect_uri,
         }
-        this.$store.dispatch('requestToken', params)
+        this.$store.dispatch('requestAuthToken', params)
           .then(() => {
-            this.$store.commit('endLoader')
             this.$router.replace(nextRoute)
           })
           .catch(error => {
-            this.$store.commit('endLoader')
             this.$store.commit('addError', error.toString())
             this.$router.replace(nextRoute)
           })
@@ -49,8 +46,11 @@ export default {
     },
 
     logout () {
-      this.$store.commit('clearApiToken')
-      this.$router.push({name: 'home'})
+      this.$store.dispatch('logout')
+        .then(() => {
+          console.log('logged out')
+          this.$router.replace({name: 'home'})
+        })
     }
   }
 }

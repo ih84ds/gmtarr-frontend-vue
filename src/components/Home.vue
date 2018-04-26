@@ -12,20 +12,13 @@
 <script>
 export default {
   name: 'Home',
-  data () {
-    return {
-      leagues: []
+  computed: {
+    leagues () {
+      return this.$store.state.api.leagues
     }
   },
   created () {
-    this.$axios
-      .get('leagues')
-      .then(response => {
-        this.leagues = response.data
-      })
-      .catch(error => {
-        this.$store.commit('addError', error.toString())
-      })
+    this.$store.dispatch('fetchLeagues')
   }
 }
 </script>

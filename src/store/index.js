@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import auth from './auth'
+import api from './api'
 
 Vue.use(Vuex)
 
@@ -42,7 +42,7 @@ const actions = {
 }
 
 const modules = {
-  auth
+  api
 }
 
 const store = new Vuex.Store({

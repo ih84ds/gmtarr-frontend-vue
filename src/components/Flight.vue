@@ -37,15 +37,14 @@ export default {
     id: Number
   },
   name: 'Flight',
-  data () {
-    return {
-      flight: null,
-      players: [],
-      matches: [],
-    }
-  },
   computed: {
-    matchesByDate: function () {
+    flight () {
+      return this.$store.state.api.currentFlight
+    },
+    matches () {
+      return this.$store.state.api.currentFlightMatches
+    },
+    matchesByDate  () {
       const matchesByDate = []
       const dates = []
       const dateMatches = {}
@@ -65,7 +64,10 @@ export default {
         })
       })
       return matchesByDate
-    }
+    },
+    players () {
+      return this.$store.state.api.currentFlightPlayers
+    },
   },
   created () {
     this.fetchData()
@@ -75,62 +77,9 @@ export default {
   },
   methods: {
     fetchData () {
-      this.fetchFlight()
-      this.fetchPlayers()
-      this.fetchMatches()
-    },
-    fetchFlight () {
-      this.$store.commit('beginLoader')
-      this.$axios
-        .get('flights/'+this.id)
-        .then(response => {
-          this.flight = response.data
-          this.$store.commit('endLoader')
-        })
-        .catch(error => {
-          this.flight = null
-          if (error.response.status === 404) {
-            this.$store.commit('addError', "Flight not found.")
-          } else {
-            this.$store.commit('addError', error.toString())
-          }
-          this.$store.commit('endLoader')
-        })
-    },
-    fetchMatches () {
-      this.$store.commit('beginLoader')
-      this.$axios
-        .get('flights/'+this.id+'/matches')
-        .then(response => {
-          this.matches = response.data
-          this.$store.commit('endLoader')
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            this.$store.commit('addError', "Flight matches not found.")
-          } else {
-            this.$store.commit('addError', error.toString())
-          }
-          this.$store.commit('endLoader')
-        })
-    },
-    fetchPlayers () {
-      this.$store.commit('beginLoader')
-      this.$axios
-        .get('flights/'+this.id+'/players')
-        .then(response => {
-          this.players = response.data
-          this.$store.commit('endLoader')
-        })
-        .catch(error => {
-          this.players = []
-          if (error.response.status === 404) {
-            this.$store.commit('addError', "Flight players not found.")
-          } else {
-            this.$store.commit('addError', error.toString())
-          }
-          this.$store.commit('endLoader')
-        })
+      this.$store.dispatch('fetchFlight', this.id)
+      this.$store.dispatch('fetchFlightMatches', this.id)
+      this.$store.dispatch('fetchFlightPlayers', this.id)
     },
   },
   components: {

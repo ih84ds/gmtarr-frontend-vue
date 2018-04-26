@@ -18,11 +18,13 @@ export default {
     id: Number
   },
   name: 'League',
-  data () {
-    return {
-      league: null,
-      flights: [],
-    }
+  computed: {
+    league () {
+      return this.$store.state.api.currentLeague
+    },
+    flights () {
+      return this.$store.state.api.currentLeagueFlights
+    },
   },
   created () {
     this.fetchData()
@@ -32,44 +34,8 @@ export default {
   },
   methods: {
     fetchData () {
-      this.fetchLeague()
-      this.fetchFlights()
-    },
-    fetchFlights () {
-      this.$store.commit('beginLoader')
-      this.$axios
-        .get('leagues/'+this.id+'/flights')
-        .then(response => {
-          this.flights = response.data
-          this.$store.commit('endLoader')
-        })
-        .catch(error => {
-          this.flights = []
-          if (error.response.status === 404) {
-            this.$store.commit('addError', "League flights not found.")
-          } else {
-            this.$store.commit('addError', error.toString())
-          }
-          this.$store.commit('endLoader')
-        })
-    },
-    fetchLeague () {
-      this.$store.commit('beginLoader')
-      this.$axios
-        .get('leagues/'+this.id)
-        .then(response => {
-          this.league = response.data
-          this.$store.commit('endLoader')
-        })
-        .catch(error => {
-          this.league = null
-          if (error.response.status === 404) {
-            this.$store.commit('addError', "League not found.")
-          } else {
-            this.$store.commit('addError', error.toString())
-          }
-          this.$store.commit('endLoader')
-        })
+      this.$store.dispatch('fetchLeague', this.id)
+      this.$store.dispatch('fetchLeagueFlights', this.id)
     },
   }
 }

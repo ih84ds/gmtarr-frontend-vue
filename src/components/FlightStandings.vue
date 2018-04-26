@@ -13,10 +13,10 @@
 export default {
   name: 'FlightStandings',
   props: ['flight'],
-  data () {
-    return {
-      standings: [],
-    }
+  computed: {
+    standings () {
+      return this.$store.state.api.currentFlightStandings
+    },
   },
   created () {
     this.fetchData()
@@ -26,25 +26,7 @@ export default {
   },
   methods: {
     fetchData () {
-      this.fetchStandings()
-    },
-    fetchStandings () {
-      this.$store.commit('beginLoader')
-      this.$axios
-        .get('flights/'+this.flight.id+'/standings')
-        .then(response => {
-          this.standings = response.data
-          this.$store.commit('endLoader')
-        })
-        .catch(error => {
-          this.flight = null
-          if (error.response.status === 404) {
-            this.$store.commit('addError', "Flight standings not found.")
-          } else {
-            this.$store.commit('addError', error.toString())
-          }
-          this.$store.commit('endLoader')
-        })
+      this.$store.dispatch('fetchFlightStandings', this.flight.id)
     },
   },
 }
