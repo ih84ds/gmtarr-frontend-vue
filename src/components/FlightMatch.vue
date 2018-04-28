@@ -5,6 +5,9 @@
     <div v-if="played" class="match-result">
       {{ winnerName }} {{ match.score }}
     </div>
+    <button v-if="canEditScore" v-on:click="editScore">
+      Enter Score
+    </button>
   </div>
 </template>
 
@@ -13,20 +16,39 @@ export default {
   name: 'FlightMatch',
   props: ['match'],
   computed: {
+    canEditScore () {
+      return this.isMyMatch
+    },
+    isMyMatch () {
+      let myPlayers = this.$store.state.api.myPlayers
+      let homeId = this.match.home_player.id
+      let visitorId = this.match.visitor_player.id
+      return (homeId in myPlayers) || (visitorId in myPlayers)
+    },
     played () {
       return !!this.match.played_date
     },
     winningPlayer() {
-      if (this.match.winner) {
-        let winnerKey = this.match.winner + '_player'
-        return this.match[winnerKey]
+      if (this.match.winner === 'home') {
+        return this.match.home_player
+      } else if (this.match.winner === 'visitor') {
+        return this.match.visitor_player
       }
       return null
     },
     winnerName () {
-      let winner = this.winningPlayer
-      return winner.name
-    }
+      if (this.winningPlayer) {
+        return this.winningPlayer.name
+      } else if (this.match.winner === 'double default') {
+        return "Double Default"
+      }
+      return null
+    },
+  },
+  methods: {
+    editScore () {
+      this.$router.push({name: 'match-edit', params: { id: this.match.id }})
+    },
   },
 }
 </script>

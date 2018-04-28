@@ -80,6 +80,8 @@ export default {
       this.$store.dispatch('fetchFlight', this.id)
       this.$store.dispatch('fetchFlightMatches', this.id)
       this.$store.dispatch('fetchFlightPlayers', this.id)
+      // fetch fresh copy of user's players in case it got stale
+      this.$store.dispatch('fetchMyPlayers', this.id)
     },
   },
   components: {

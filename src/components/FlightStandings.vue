@@ -3,7 +3,9 @@
     <h3>Standings</h3>
     <ul v-if="standings">
       <li v-for="player in standings" :key="player.player_id">
-        {{ player.name }} {{ player.wins }}-{{ player.losses }} ({{ player.game_wins }}-{{ player.game_losses }})
+        {{ player.name }}
+        {{ player.wins }}-{{ player.losses }}<span v-if="player.ties">-{{ player.ties }}</span>
+        ({{ player.game_wins }}-{{ player.game_losses }})
       </li>
     </ul>
   </div>

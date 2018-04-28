@@ -1,9 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from '@/components/Login'
 import Home from '@/components/Home'
-import League from '@/components/League'
 import Flight from '@/components/Flight'
+import League from '@/components/League'
+import Login from '@/components/Login'
+import MatchEdit from '@/components/MatchEdit'
 
 Vue.use(Router)
 
@@ -39,6 +40,12 @@ export default new Router({
       name: 'flight',
       component: Flight,
       props: (route) => ({id: parseInt(route.params.id)}),
-    }
+    },
+    {
+      path: '/matches/:id/edit',
+      name: 'match-edit',
+      component: MatchEdit,
+      props: (route) => ({id: parseInt(route.params.id)}),
+    },
   ]
 })

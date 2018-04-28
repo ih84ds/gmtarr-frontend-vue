@@ -19,7 +19,10 @@ const state = {
   currentFlightStandings: [],
   currentLeague: null,
   currentLeagueFlights: [],
+  currentMatch: null,
+  currentMatchOptions: null,
   leagues: [],
+  myPlayers: {},
 }
 
 const getters = {
@@ -53,6 +56,9 @@ const mutations = {
     // fugget about it
     localStorage.removeItem('api-auth-token')
   },
+  clearMyPlayers: (state) => {
+    state.myPlayers = {}
+  },
   deauthorizeApi: (state) => {
     // remove Authorization header
     delete $axios.defaults.headers.common['Authorization']
@@ -80,8 +86,17 @@ const mutations = {
   setCurrentLeagueFlights: (state, flights) => {
     state.currentLeagueFlights = flights
   },
+  setCurrentMatch: (state, match) => {
+    state.currentMatch = match
+  },
+  setCurrentMatchOptions: (state, options) => {
+    state.currentMatchOptions = options
+  },
   setLeagues: (state, leagues) => {
     state.leagues = leagues
+  },
+  setMyPlayers: (state, players) => {
+    state.myPlayers = players
   },
 }
 
@@ -195,9 +210,57 @@ const actions = {
         context.commit('addError', error.toString())
       })
   },
+  fetchMatch (context, matchId) {
+    context.commit('setCurrentMatch', null)
+    return $axios
+      .get('matches/'+matchId)
+      .then(response => {
+        context.commit('setCurrentMatch', response.data)
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          context.commit('addError', "Match not found.")
+        } else {
+          context.commit('addError', error.toString())
+        }
+      })
+  },
+  fetchMatchOptions (context, matchId) {
+    context.commit('setCurrentMatchOptions', null)
+    return $axios
+      .options('matches/'+matchId)
+      .then(response => {
+        context.commit('setCurrentMatchOptions', response.data)
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          context.commit('addError', "Match Options not found.")
+        } else {
+          context.commit('addError', error.toString())
+        }
+      })
+  },
+  fetchMyPlayers (context) {
+    if (context.getters.authenticated) {
+      context.commit('setMyPlayers', {})
+      return $axios
+        .get('players/mine')
+        .then(response => {
+          let myPlayers = {}
+          let myPlayersArray = response.data
+          for (var i = myPlayersArray.length - 1; i >= 0; i--) {
+            let player = myPlayersArray[i]
+            myPlayers[player.id] = player
+          }
+          context.commit('setMyPlayers', myPlayers)
+        })
+        .catch(error => {
+          context.commit('addError', error.toString())
+        })
+    }
+  },
   initApi (context) {
     context.commit('authorizeApi')
-    context.dispatch('refreshAuthToken')
     // tell the app we're loading something
     $axios.interceptors.request.use((config) => {
         context.commit('beginLoader')
@@ -211,9 +274,12 @@ const actions = {
         context.commit('endLoader')
         return Promise.reject(error)
       })
+    context.dispatch('refreshAuthToken')
+    context.dispatch('fetchMyPlayers')
   },
   logout (context) {
     context.commit('clearAuthToken')
+    context.commit('clearMyPlayers')
     context.commit('deauthorizeApi')
   },
   refreshAuthToken (context) {
@@ -236,6 +302,7 @@ const actions = {
       .then(response => {
         context.commit('setAuthToken', response.data.token)
         context.commit('authorizeApi')
+        context.dispatch('fetchMyPlayers')
         context.dispatch('scheduleAuthTokenRefresh')
       })
       // No catch... leave current token as-is
@@ -253,6 +320,9 @@ const actions = {
       }
       setTimeout(() => { context.dispatch('refreshAuthToken') }, refreshAt)
     }
+  },
+  submitMatchScore (context, params) {
+    return $axios.put('matches/'+params.id, params.data)
   },
 }
 
