@@ -4,7 +4,7 @@
       <h2>{{ league.name }}</h2>
       <ul v-if="flights.length">
         <li v-for="flight in flights" :key="flight.id">
-          <router-link :to="{name: 'flight', params: {id: flight.id}}">{{ flight.name }}</router-link>
+          <router-link :to="{name: 'flight', params: {leagueId: id, flightId: flight.id}}">{{ flight.name }}</router-link>
         </li>
       </ul>
       <p v-else>There are no flights right now. Check back soon!</p>

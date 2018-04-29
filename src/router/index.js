@@ -36,10 +36,10 @@ export default new Router({
       props: (route) => ({id: parseInt(route.params.id)}),
     },
     {
-      path: '/flights/:id',
+      path: '/leagues/:leagueId/flights/:flightId',
       name: 'flight',
       component: Flight,
-      props: (route) => ({id: parseInt(route.params.id)}),
+      props: (route) => ({id: parseInt(route.params.flightId)}),
     },
     {
       path: '/matches/:id/edit',

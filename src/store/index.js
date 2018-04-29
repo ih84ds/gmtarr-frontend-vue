@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import api from './api'
+import variables from './variables'
 
 Vue.use(Vuex)
 
@@ -42,7 +43,8 @@ const actions = {
 }
 
 const modules = {
-  api
+  api,
+  variables
 }
 
 const store = new Vuex.Store({
@@ -53,5 +55,26 @@ const store = new Vuex.Store({
   modules,
   strict: debug
 })
+
+
+if (module.hot) {
+  // accept actions and mutations as hot modules
+  let hotModules = [
+    './modules/variables',
+    './modules/api'
+  ]
+
+  module.hot.accept(hotModules, () => {
+    // require the updated modules
+    // have to add .default here due to babel 6 module output
+    // swap in the new actions and mutations
+    store.hotUpdate({
+      modules: {
+        variables: newVrequire('./vars').default,
+        api: newVrequire('./api').default
+      }
+    })
+  })
+}
 
 export default store

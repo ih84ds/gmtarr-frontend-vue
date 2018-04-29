@@ -1,27 +1,52 @@
 <template>
-  <div id="app">
-    <router-link :to="{name: 'home'}" id="logo-header">
-      <img src="./assets/gmta-logo.png">
-      <img src="./assets/rr.png">
-      <h1>GMTA Round Robin</h1>
-    </router-link>
-    <button v-if="authenticated" v-on:click="logout">
-      Log Out
-    </button>
-    <button v-else v-on:click="authenticate">
-      Log In
-    </button>
-    <error-list/>
-    <div class="loading" v-if="loading">
-      Loading...
-    </div>
-    <router-view/>
-  </div>
+  <v-app id="app">
+
+    <v-toolbar color="primary" dark fixed app>
+      <v-toolbar-title>GMTA Round Robin</v-toolbar-title>
+      <v-spacer />
+      <v-toolbar-items>
+        <template v-if="!authenticated">
+          <v-btn icon class="hidden-md-and-up" flat @click="authenticate">
+            <v-icon>fingerprint</v-icon>
+          </v-btn>
+          <v-btn class="hidden-sm-and-down" flat @click="authenticate">Log in</v-btn>
+        </template>
+        <template v-if="authenticated">
+          <v-btn class="hidden-md-and-up" icon @click="logout">
+            <v-icon>exit_to_app</v-icon>
+          </v-btn>
+          <v-btn class="hidden-sm-and-down" flat @click="logout">Logout</v-btn>
+        </template>
+      </v-toolbar-items>
+    </v-toolbar>
+
+    <v-content>
+      <v-breadcrumbs divider="/">
+        <v-breadcrumbs-item
+          v-for="item in getPathItems(fullPath)"
+          :key="item.text"
+          :to="{path: item.routerPath}"
+          :disabled="item.disabled"
+          exact
+        >
+          {{ item.text }}
+        </v-breadcrumbs-item>
+      </v-breadcrumbs>
+      <v-container fluid fill-height>
+        <v-layout justify-center>
+          <v-flex text-xs-center>
+            <router-view/>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+
+  </v-app>
 </template>
 
 <script>
 import ErrorList from './components/ErrorList'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'App',
   computed: {
@@ -31,6 +56,10 @@ export default {
     loading () {
       return this.$store.getters.loading
     },
+    fullPath () {
+      return this.$router.app.$route.fullPath
+    },
+    ...mapGetters('variables', ['getPathItems'])
   },
   created () {
     this.$store.dispatch('initApi')
@@ -56,12 +85,11 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: #2c3e50
 }
-#logo-header {
-  
-}
+/* #logo-header {
+
+} */
 h1, h2 {
   font-weight: normal;
 }
