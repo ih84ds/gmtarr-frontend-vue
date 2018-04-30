@@ -5,7 +5,7 @@
         <v-toolbar-title>{{ flight.name }}</v-toolbar-title>
       </v-toolbar>
 
-      <v-container fluid grid-list-xs v-if="players.length">
+      <v-container v-if="players.length" fluid grid-list-xs>
         <v-layout row wrap>
           <v-flex v-for="player in players" :key="player.id" xs12 sm6 md4 class="px-4 py-3 text-xs-left">
             <h2 v-html="player.name + ' (' + player.ntrp + ')'"></h2>
@@ -19,25 +19,17 @@
         </v-layout>
       </v-container>
       <p v-else>There are no players right now. Check back soon!</p>
-      <flight-standings :flight="flight"></flight-standings>
-      <h3>Schedule</h3>
-      <ul v-if="matchesByDate.length">
-        <li v-for="date in matchesByDate" :key="date.date">
-          {{ date.date }}
-          <ul v-if="date.matches.length">
-            <li v-for="match in date.matches" :key="match.id">
-              <flight-match :match="match"></flight-match>
-            </li>
-          </ul>
-        </li>
-      </ul>
-      <p v-else>There are no matches right now. Check back soon!</p>
+
+      <flight-standings :flight="flight" class="ma-3"></flight-standings>
+
+      <flight-matches :matchesByDate="matchesByDate" class="ma-3"></flight-matches>
+
     </v-card>
   </div>
 </template>
 
 <script>
-import FlightMatch from './FlightMatch'
+import FlightMatches from './FlightMatches'
 import FlightStandings from './FlightStandings'
 
 export default {
@@ -93,7 +85,7 @@ export default {
     },
   },
   components: {
-    FlightMatch,
+    FlightMatches,
     FlightStandings,
   },
 }
