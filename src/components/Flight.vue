@@ -1,15 +1,23 @@
 <template>
-  <div class="flight">
-    <div class="content" v-if="flight">
-      <h2>{{ flight.name }}</h2>
-      <ul v-if="players.length">
-        <li v-for="player in players" :key="player.id">
-          {{ player.name }}
-          ({{ player.ntrp}})
-          <a v-if="player.email" :href="'mailto:'+player.email">{{ player.email }}</a>
-          <a v-if="player.phone" :href="'tel:'+player.phone">{{ player.phone }}</a>
-        </li>
-      </ul>
+  <div>
+    <v-card v-if="flight">
+      <v-toolbar>
+        <v-toolbar-title>{{ flight.name }}</v-toolbar-title>
+      </v-toolbar>
+
+      <v-container fluid grid-list-xs v-if="players.length">
+        <v-layout row wrap>
+          <v-flex v-for="player in players" :key="player.id" xs12 sm6 md4 class="px-4 py-3 text-xs-left">
+            <h2 v-html="player.name + ' (' + player.ntrp + ')'"></h2>
+            <h2 v-if="player.email">
+              <a :href="'mailto:'+player.email" v-html="player.email"></a>
+            </h2>
+            <h2 v-if="player.phone">
+              <a :href="'tel:'+player.phone">{{ player.phone }}</a>
+            </h2>
+          </v-flex>
+        </v-layout>
+      </v-container>
       <p v-else>There are no players right now. Check back soon!</p>
       <flight-standings :flight="flight"></flight-standings>
       <h3>Schedule</h3>
@@ -24,7 +32,7 @@
         </li>
       </ul>
       <p v-else>There are no matches right now. Check back soon!</p>
-    </div>
+    </v-card>
   </div>
 </template>
 
