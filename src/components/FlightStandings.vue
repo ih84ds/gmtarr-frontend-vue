@@ -26,27 +26,27 @@ export default {
       headers: [
         {
           text: '',
-          align: 'center',
+          align: 'left',
           sortable: false
         },
         {
           text: 'W',
-          align: 'center',
+          align: 'left',
           sortable: false
         },
         {
           text: 'L',
-          align: 'center',
+          align: 'left',
           sortable: false
         },
         {
           text: 'Tie',
-          align: 'center',
+          align: 'left',
           sortable: false
         },
         {
           text: 'Game %',
-          align: 'center',
+          align: 'left',
           sortable: false
         }
       ]
