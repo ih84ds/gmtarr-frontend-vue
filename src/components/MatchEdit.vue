@@ -3,26 +3,86 @@
     <ul class="form-errors" v-if="errors.length">
       <li v-for="(error, index) in errors" :key="index">{{ error }}</li>
     </ul>
-    <form v-on:submit.prevent="submitScore">
-      <select name="status" v-model="status">
-        <option :value="null">--</option>
-        <option v-for="opt in statusChoices" :key="opt.value" :value="opt.value">{{ opt.display_name }}</option>
-      </select>
-      <input type="date" name="played_date" v-model="played_date">
-      <select name="winner" v-model="winner">
-        <option :value="null">--</option>
-        <option v-for="opt in winnerChoices" :key="opt.value" :value="opt.value">{{ opt.display_name }}</option>
-      </select>
-      <input type="number" name="score_winner" v-model.number="score_winner" step="1" min="0" max="11">
-      &ndash;
-      <input type="number" name="score_loser" v-model.number="score_loser" step="1" min="0" max="10">
-      <button>
-        Submit Score
-      </button>
-      <button v-on:click.prevent="onCancel">
-        Cancel
-      </button>
-    </form>
+    <v-container grid-list-lg>
+      <v-form v-on:submit.prevent="submitScore" v-model="valid">
+        <v-select
+          v-model="status"
+          :items="statusChoices"
+          item-text="display_name"
+          item-value="value"
+          :rules="[v => !!v || 'Status is required']"
+          label="Status"
+          required
+        ></v-select>
+      <v-menu
+            ref="dateMenu"
+            :close-on-content-click="false"
+            v-model="dateMenu"
+            :nudge-right="40"
+            lazy
+            transition="scale-transition"
+            offset-y
+            full-width
+            max-width="290px"
+            min-width="290px"
+          >
+            <v-text-field
+              slot="activator"
+              v-model="played_date_formatted"
+              label="Match date"
+              hint="MM/DD/YYYY format"
+              persistent-hint
+              append-icon="event"
+              @blur="played_date = parseDate(played_date_formatted)"
+              required
+              :rules="[v => !!v || 'Match date is required']"
+            ></v-text-field>
+            <v-date-picker v-model="played_date" no-title @input="dateMenu = false"></v-date-picker>
+          </v-menu>
+        <v-select
+          v-model="winner"
+          :items="winnerChoices"
+          item-text="display_name"
+          item-value="value"
+          :rules="[v => !!v || 'Winner is required']"
+          label="Winner"
+          required
+        ></v-select>
+        <v-layout row wrap>
+          <v-flex xs12 sm6>
+            <v-text-field
+              v-model.number="score_winner"
+              type="number"
+              label="Winner score"
+              required
+              max="11"
+              min="0"
+              :rules="[v => !!v || 'Winner score is required']"
+            >
+            </v-text-field>
+          </v-flex>
+          <v-flex xs12 sm6>
+            <v-text-field
+              v-model.number="score_loser"
+              type="number"
+              label="Loser score"
+              required
+              max="10"
+              min="0"
+              :rules="[v => !!v || 'Loser score is required']"
+            >
+            </v-text-field>
+          </v-flex>
+        </v-layout>
+        <v-btn
+          type="submit"
+          :disabled="!valid"
+        >
+          submit
+        </v-btn>
+        <v-btn @click="clearData">clear</v-btn>
+      </v-form>
+    </v-container>
   </div>
 </template>
 
@@ -34,10 +94,15 @@ export default {
     return {
       errors: [],
       played_date: null,
+      played_date_formatted: null,
+      date: null,
+      dateMenu: false,
       score_loser: null,
       score_winner: null,
       status: null,
       winner: null,
+      valid: true,
+      maxWinnerScore: 11
     }
   },
   computed: {
@@ -121,8 +186,23 @@ export default {
   watch: {
     id: 'fetchData',
     match: 'setDataFromMatch',
+    played_date (val) {
+      this.played_date_formatted = this.formatDate(this.played_date)
+    }
   },
   methods: {
+    formatDate (date) {
+      if (!date) return null
+
+      const [year, month, day] = date.split('-')
+      return `${month}/${day}/${year}`
+    },
+    parseDate (date) {
+      if (!date) return null
+
+      const [month, day, year] = date.split('/')
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+    },
     onCancel () {
       this.$router.back()
     },
