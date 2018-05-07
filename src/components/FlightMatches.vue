@@ -9,20 +9,91 @@
         hide-actions
       >
         <template slot="items" slot-scope="match">
-          <td>{{ match.item.name }}</td>
-          <td>{{ match.item.wins }}</td>
-          <td>{{ match.item.losses }}</td>
-          <td>{{ match.item.ties }}</td>
+          <td :class="match.item.winner === 'home' ? 'winner' : ''">{{ match.item.home_player.name }}</td>
+          <td :class="match.item.winner === 'visitor' ? 'winner' : ''">{{ match.item.visitor_player.name }}</td>
+          <td v-if="match.item.score">
+            <v-btn class="scoreEnter" flat :disabled="!canEdit(match.item)" @click.native="editScore(match.item.id)">{{ match.item.score }}</v-btn>
+          </td>
+          <td v-else>
+            <v-btn flat @click="editScore(match.item.id)" v-if="canEdit(match.item)">
+              <v-icon color="teal">edit</v-icon>
+            </v-btn>
+          </td>
         </template>
       </v-data-table>
     </div>
-    <p v-if="!date.matches.length">There are no matches right now. Check back soon!</p>
+    <p v-if="!matchesByDate.length">There are no matches right now. Check back soon!</p>
   </div>
 </template>
 
 <script>
 export default {
   name: 'FlightMatches',
-  props: ['matchesByDate']
+  props: ['matchesByDate', 'myPlayers'],
+  data () {
+    return {
+      headers: [
+        {
+          text: 'Home',
+          align: 'left',
+          sortable: false,
+          value: 'home_player',
+          class: 'forty'
+        },
+        {
+          text: 'Visitor',
+          align: 'left',
+          sortable: false,
+          value: 'visitor_player',
+          class: 'forty'
+        },
+        {
+          text: 'Score',
+          align: 'left',
+          sortable: false,
+          value: 'score',
+          class: 'twenty'
+        }
+      ]
+    }
+  },
+  methods: {
+    canEdit: function (match) {
+      console.log(this.matchesByDate)
+      if (this.myPlayers) {
+        let myPlayers = this.myPlayers
+        let homeId = match.home_player.id
+        let visitorId = match.visitor_player.id
+        return (homeId in myPlayers) || (visitorId in myPlayers)
+      }
+    },
+    editScore: function (matchId) {
+      this.$emit('editScore', matchId)
+    }
+  }
 }
 </script>
+
+<style>
+td {
+  text-align: left;
+}
+td.winner {
+  font-weight: bold !important;
+  font-style: italic;
+}
+.theme--light td button.btn.scoreEnter {
+  color: teal !important;
+  text-decoration: underline;
+}
+.theme--light td button.btn.btn--disabled {
+  color: #000000 !important;
+  text-decoration: none;
+}
+.forty {
+  width: 40%;
+}
+.twenty {
+  width: 20%;
+}
+</style>

@@ -22,7 +22,7 @@
 
       <flight-standings :flight="flight" class="ma-3"></flight-standings>
 
-      <flight-matches :matchesByDate="matchesByDate" class="ma-3"></flight-matches>
+      <flight-matches :matchesByDate="matchesByDate" :myPlayers="$store.state.api.myPlayers" @editScore="editScore" class="ma-3"></flight-matches>
 
     </v-card>
   </div>
@@ -83,6 +83,9 @@ export default {
       // fetch fresh copy of user's players in case it got stale
       this.$store.dispatch('fetchMyPlayers', this.id)
     },
+    editScore (matchId) {
+      this.$router.push({name: 'match-edit', params: { id: matchId }})
+    }
   },
   components: {
     FlightMatches,
