@@ -48,7 +48,6 @@ export default {
     logout () {
       this.$store.dispatch('logout')
         .then(() => {
-          console.log('logged out')
           this.$router.replace({name: 'home'})
         })
     }
