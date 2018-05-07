@@ -74,13 +74,16 @@
             </v-text-field>
           </v-flex>
         </v-layout>
+        <v-btn outline color="red" @click="cancel">cancel</v-btn>
+        <v-btn outline color="grey" @click="clearData">clear</v-btn>
         <v-btn
+          outline
+          color="green"
           type="submit"
           :disabled="!valid"
         >
           submit
         </v-btn>
-        <v-btn @click="clearData">clear</v-btn>
       </v-form>
     </v-container>
   </div>
@@ -256,7 +259,10 @@ export default {
           }
         })
     },
-  },
+    cancel () {
+      this.$router.push({name: 'flight', params: { id: this.match.flight.id }})
+    }
+  }
 }
 </script>
 
