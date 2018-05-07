@@ -1,5 +1,7 @@
 <template>
   <div>
+    <img src="../assets/rr.png">
+    <h1>GMTA Round Robin</h1>
     <ul v-if="leagues.length">
       <li v-for="league in leagues" :key="league.id">
         <router-link :to="{name: 'league', params: {id: league.id}}">{{ league.name }}</router-link>

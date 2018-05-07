@@ -1,13 +1,19 @@
 <template>
   <div>
-    <h3>Standings</h3>
-    <ul v-if="standings">
-      <li v-for="player in standings" :key="player.player_id">
-        {{ player.name }}
-        {{ player.wins }}-{{ player.losses }}<span v-if="player.ties > 0">-{{ player.ties }}</span>
-        ({{ player.game_wins }}-{{ player.game_losses }})
-      </li>
-    </ul>
+    <h1 class="text-xs-left">Standings</h1>
+    <v-data-table
+      :headers="headers"
+      :items="standings"
+      hide-actions
+    >
+      <template slot="items" slot-scope="player">
+        <td>{{ player.item.name }}</td>
+        <td>{{ player.item.wins }}</td>
+        <td>{{ player.item.losses }}</td>
+        <td>{{ player.item.ties }}</td>
+        <td>{{ gamesWonPerc(player) }}%</td>
+      </template>
+    </v-data-table>
   </div>
 </template>
 
@@ -15,6 +21,37 @@
 export default {
   name: 'FlightStandings',
   props: ['flight'],
+  data () {
+    return {
+      headers: [
+        {
+          text: '',
+          align: 'left',
+          sortable: false
+        },
+        {
+          text: 'W',
+          align: 'left',
+          sortable: false
+        },
+        {
+          text: 'L',
+          align: 'left',
+          sortable: false
+        },
+        {
+          text: 'Tie',
+          align: 'left',
+          sortable: false
+        },
+        {
+          text: 'Game %',
+          align: 'left',
+          sortable: false
+        }
+      ]
+    }
+  },
   computed: {
     standings () {
       return this.$store.state.api.currentFlightStandings
@@ -30,6 +67,11 @@ export default {
     fetchData () {
       this.$store.dispatch('fetchFlightStandings', this.flight.id)
     },
+    gamesWonPerc: function (player) {
+      let wins = parseInt(player.item.game_wins)
+      let losses = parseInt(player.item.game_losses)
+      return Math.round(wins * 100 / (wins + losses)) || 0
+    }
   },
 }
 </script>

@@ -4,6 +4,15 @@ import Vue from 'vue'
 import App from './App'
 import store from './store'
 import router from './router'
+import 'babel-polyfill'
+
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
+Vue.use(Vuetify, {
+  theme: {
+    primary: '#3ba575'
+  }
+})
 
 Vue.config.productionTip = false
 

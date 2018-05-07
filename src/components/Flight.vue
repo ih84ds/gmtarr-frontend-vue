@@ -1,35 +1,35 @@
 <template>
-  <div class="flight">
-    <div class="content" v-if="flight">
-      <h2>{{ flight.name }}</h2>
-      <ul v-if="players.length">
-        <li v-for="player in players" :key="player.id">
-          {{ player.name }}
-          ({{ player.ntrp}})
-          <a v-if="player.email" :href="'mailto:'+player.email">{{ player.email }}</a>
-          <a v-if="player.phone" :href="'tel:'+player.phone">{{ player.phone }}</a>
-        </li>
-      </ul>
+  <div>
+    <v-card v-if="flight">
+      <v-toolbar>
+        <v-toolbar-title>{{ flight.name }}</v-toolbar-title>
+      </v-toolbar>
+
+      <v-container v-if="players.length" fluid grid-list-xs>
+        <v-layout row wrap>
+          <v-flex v-for="player in players" :key="player.id" xs12 sm6 md4 class="px-4 py-3 text-xs-left">
+            <h2 v-html="player.name + ' (' + player.ntrp + ')'"></h2>
+            <h2 v-if="player.email">
+              <a :href="'mailto:'+player.email" v-html="player.email"></a>
+            </h2>
+            <h2 v-if="player.phone">
+              <a :href="'tel:'+player.phone">{{ player.phone }}</a>
+            </h2>
+          </v-flex>
+        </v-layout>
+      </v-container>
       <p v-else>There are no players right now. Check back soon!</p>
-      <flight-standings :flight="flight"></flight-standings>
-      <h3>Schedule</h3>
-      <ul v-if="matchesByDate.length">
-        <li v-for="date in matchesByDate" :key="date.date">
-          {{ date.date }}
-          <ul v-if="date.matches.length">
-            <li v-for="match in date.matches" :key="match.id">
-              <flight-match :match="match"></flight-match>
-            </li>
-          </ul>
-        </li>
-      </ul>
-      <p v-else>There are no matches right now. Check back soon!</p>
-    </div>
+
+      <flight-standings :flight="flight" class="ma-3"></flight-standings>
+
+      <flight-matches :matchesByDate="matchesByDate" :myPlayers="$store.state.api.myPlayers" @editScore="editScore" class="ma-3"></flight-matches>
+
+    </v-card>
   </div>
 </template>
 
 <script>
-import FlightMatch from './FlightMatch'
+import FlightMatches from './FlightMatches'
 import FlightStandings from './FlightStandings'
 
 export default {
@@ -83,9 +83,12 @@ export default {
       // fetch fresh copy of user's players in case it got stale
       this.$store.dispatch('fetchMyPlayers', this.id)
     },
+    editScore (matchId) {
+      this.$router.push({name: 'match-edit', params: { id: matchId }})
+    }
   },
   components: {
-    FlightMatch,
+    FlightMatches,
     FlightStandings,
   },
 }
