@@ -209,9 +209,6 @@ export default {
       const [month, day, year] = date.split('/')
       return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
     },
-    onCancel () {
-      this.$router.back()
-    },
     clearData () {
       this.played_date = null
       this.score = null
@@ -263,7 +260,7 @@ export default {
         })
     },
     cancel () {
-      this.$router.push({name: 'flight', params: { id: this.flight.id }})
+      this.$router.push({name: 'flight', params: { flightId: this.flight.id, leagueId: this.flight.league }})
     }
   }
 }
