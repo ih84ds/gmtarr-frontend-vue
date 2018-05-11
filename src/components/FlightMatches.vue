@@ -59,7 +59,6 @@ export default {
   },
   methods: {
     canEdit: function (match) {
-      console.log(this.matchesByDate)
       if (this.myPlayers) {
         let myPlayers = this.myPlayers
         let homeId = match.home_player.id

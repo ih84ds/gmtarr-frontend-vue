@@ -112,6 +112,9 @@ export default {
     canEditScore () {
       return this.isMyMatch
     },
+    flight () {
+      return this.match && this.match.flight
+    },
     homePlayerName () {
       return this.match && this.match.home_player.name
     },
@@ -246,7 +249,7 @@ export default {
       }
       this.$store.dispatch('submitMatchScore', params)
         .then((response) => {
-          this.$router.push({name: 'flight', params: { id: this.match.flight.id }})
+          this.$router.push({name: 'flight', params: { flightId: this.flight.id, leagueId: this.flight.league }})
         })
         .catch((error) => {
           let errors = error.response.data
@@ -260,7 +263,7 @@ export default {
         })
     },
     cancel () {
-      this.$router.push({name: 'flight', params: { id: this.match.flight.id }})
+      this.$router.push({name: 'flight', params: { id: this.flight.id }})
     }
   }
 }
