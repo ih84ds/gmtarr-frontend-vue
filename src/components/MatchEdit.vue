@@ -57,7 +57,7 @@
               required
               max="11"
               min="0"
-              :rules="[v => (!isNaN(v) && [0,10,11].includes(v)) || 'Winner score of 0, 10 or 11 is required']"
+              :rules="[v => (!isNaN(v) && v <= 11 && v >= 0) || 'Winner score between 0 and 11 is required']"
             >
             </v-text-field>
           </v-flex>
