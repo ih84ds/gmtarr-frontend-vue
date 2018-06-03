@@ -30,17 +30,37 @@ const getters = {
     return !!state.authToken
   },
   authTokenData: (state, getters) => {
-    return getters.authenticated ? jwtDecode(state.authToken) : null
+    let tokenData = null
+    if (getters.authenticated) {
+      try {
+        tokenData = jwtDecode(state.authToken)
+      } catch (e) {
+        // bad token
+      }
+    }
+    return tokenData
   },
   authTokenExpiration: (state, getters) => {
     let expiration = null
     let tokenData = getters.authTokenData
-    let expTimestamp = tokenData.exp
-    if (expTimestamp > 0) {
-      // exp is in seconds, Date expects milliseconds
-      expiration = new Date(expTimestamp * 1000)
+    if (tokenData) {
+      let expTimestamp = tokenData.exp
+      if (expTimestamp > 0) {
+        // exp is in seconds, Date expects milliseconds
+        expiration = new Date(expTimestamp * 1000)
+      }
     }
     return expiration
+  },
+  authTokenExpired: (state, getters) => {
+    // consider it expired unless it's not
+    let expired = true
+    let expiration = getters.authTokenExpiration
+    if (expiration instanceof Date) {
+      let now = new Date()
+      expired = expiration.getTime() < now.getTime()
+    }
+    return expired
   },
 }
 
@@ -260,7 +280,14 @@ const actions = {
     }
   },
   initApi (context) {
-    context.commit('authorizeApi')
+    // we're initializing from a previously stored token; check to see if it's expired
+    if (context.getters.authTokenExpired) {
+      // looks old. don't try to use it.
+      context.commit('clearAuthToken')
+    } else {
+      // seems to still have some life left. let's use it. (refresh scheduled below)
+      context.commit('authorizeApi')
+    }
     // tell the app we're loading something
     $axios.interceptors.request.use((config) => {
         context.commit('beginLoader')
