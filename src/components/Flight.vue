@@ -8,7 +8,7 @@
       <v-container v-if="players.length" fluid grid-list-xs>
         <v-layout row wrap>
           <v-flex v-for="player in players" :key="player.id" xs12 sm6 md4 class="px-4 py-3 text-xs-left">
-            <h2 v-html="player.name + ' (' + player.ntrp + ')'"></h2>
+            <h2 v-html="player.name"></h2>
             <h2 v-if="player.email">
               <a :href="'mailto:'+player.email" v-html="player.email"></a>
             </h2>
