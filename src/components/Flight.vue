@@ -5,7 +5,7 @@
         <v-toolbar-title>{{ flight.name }}</v-toolbar-title>
       </v-toolbar>
 
-      <v-container v-if="players.length" fluid grid-list-xs>
+      <v-container v-if="authenticated" fluid grid-list-xs>
         <v-layout row wrap>
           <v-flex v-for="player in players" :key="player.id" xs12 sm6 md4 class="px-4 py-3 text-xs-left">
             <h2 v-html="player.name"></h2>
@@ -18,7 +18,7 @@
           </v-flex>
         </v-layout>
       </v-container>
-      <p v-else>There are no players right now. Check back soon!</p>
+      <v-subheader v-else>Log in to view player info.</v-subheader>
 
       <flight-standings :flight="flight" class="ma-3"></flight-standings>
 
@@ -38,8 +38,21 @@ export default {
   },
   name: 'Flight',
   computed: {
+    authenticated () {
+      return this.$store.getters.authenticated
+    },
     flight () {
       return this.$store.state.api.currentFlight
+    },
+    isMyFlight () {
+      const myPlayers = this.$store.state.api.myPlayers
+      for (let p in this.players) {
+        let player = this.players[p]
+        if (player.id in myPlayers) {
+          return true
+        }
+      }
+      return false
     },
     matches () {
       return this.$store.state.api.currentFlightMatches
