@@ -4,13 +4,20 @@ services:
     image: "node:8"
     volumes:
       - ".:/usr/src/app"
+      - "node_modules:/usr/src/app/node_modules"
+      - "dotconfig:/root/.config"
     environment:
       DEBUG: "gmtarr:*"
       HOST: "0.0.0.0"
       PORT: "8080"
       # pass API_BASE_URL from calling shell environment
       API_BASE_URL:
+      # API_BASE_URL: 'https://gmtarr-api.rrish.org/api/'
     ports:
       - "8080:8080"
     working_dir: "/usr/src/app"
     command: [npm, start]
+
+volumes:
+  node_modules:
+  dotconfig:
