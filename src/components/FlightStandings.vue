@@ -7,11 +7,11 @@
       hide-actions
     >
       <template slot="items" slot-scope="player">
-        <td>{{ player.item.name }}</td>
-        <td>{{ player.item.wins }}</td>
-        <td>{{ player.item.losses }}</td>
-        <td>{{ player.item.ties }}</td>
-        <td>{{ gamesWonPerc(player) }}%</td>
+        <td class="text-xs-left">{{ player.item.name }}</td>
+        <td class="text-xs-right">{{ player.item.wins }}</td>
+        <td class="text-xs-right">{{ player.item.losses }}</td>
+        <td class="text-xs-right">{{ player.item.ties }}</td>
+        <td class="text-xs-right">{{ gamesWonPerc(player) }}%</td>
       </template>
     </v-data-table>
   </div>
@@ -31,22 +31,22 @@ export default {
         },
         {
           text: 'W',
-          align: 'left',
+          align: 'right',
           sortable: false
         },
         {
           text: 'L',
-          align: 'left',
+          align: 'right',
           sortable: false
         },
         {
           text: 'Tie',
-          align: 'left',
+          align: 'right',
           sortable: false
         },
         {
           text: 'Game %',
-          align: 'left',
+          align: 'right',
           sortable: false
         }
       ]
@@ -68,9 +68,7 @@ export default {
       this.$store.dispatch('fetchFlightStandings', this.flight.id)
     },
     gamesWonPerc: function (player) {
-      let wins = parseInt(player.item.game_wins)
-      let losses = parseInt(player.item.game_losses)
-      return Math.round(wins * 100 / (wins + losses)) || 0
+      return Math.round(player.item.game_win_percentage) || 0
     }
   },
 }

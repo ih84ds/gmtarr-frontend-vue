@@ -11,10 +11,10 @@
         <template slot="items" slot-scope="match">
           <td :class="match.item.winner === 'home' ? 'winner' : ''">{{ match.item.home_player.name }}</td>
           <td :class="match.item.winner === 'visitor' ? 'winner' : ''">{{ match.item.visitor_player.name }}</td>
-          <td v-if="match.item.score">
+          <td v-if="match.item.score" class="text-xs-right">
             <v-btn class="scoreEnter" flat :disabled="!canEdit(match.item)" @click.native="editScore(match.item.id)">{{ match.item.score }}</v-btn>
           </td>
-          <td v-else>
+          <td v-else class="text-xs-right">
             <v-btn flat @click="editScore(match.item.id)" v-if="canEdit(match.item)">
               <v-icon color="teal">edit</v-icon>
             </v-btn>
@@ -49,7 +49,7 @@ export default {
         },
         {
           text: 'Score',
-          align: 'left',
+          align: 'right',
           sortable: false,
           value: 'score',
           class: 'twenty'
@@ -81,11 +81,11 @@ td.winner {
   font-weight: bold !important;
   font-style: italic;
 }
-.theme--light td button.btn.scoreEnter {
+.theme--light td button.v-btn.scoreEnter {
   color: teal !important;
   text-decoration: underline;
 }
-.theme--light td button.btn.btn--disabled {
+.theme--light td button.v-btn.v-btn--disabled {
   color: #000000 !important;
   text-decoration: none;
 }
